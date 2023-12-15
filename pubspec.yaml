@@ -39,15 +39,18 @@ dependencies:
   flutter_bloc: ^8.1.3
   socket_io_client: ^2.0.3+1
   rxdart: ^0.27.7
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.2
+  flutter_widget_from_html: ^0.14.9
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   freezed: ^2.4.5
-  flutter_lints: ^2.0.0
   auto_route_generator: ^7.3.2
   build_runner: ^2.4.7
+  lints: ^3.0.0
 
 flutter:
 
@@ -57,8 +60,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/terms_and_conditions.html
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

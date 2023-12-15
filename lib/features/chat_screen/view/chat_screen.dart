@@ -14,9 +14,7 @@ class ChatScreen extends StatelessWidget {
     return Scaffold(
       body: BlocBuilder<ChatBloc, ChatState>(
         builder: (context, state){
-          return Container(
-            child: Text('chat screen'),
-          );
+          return const Text('chat screen');
         },
       ),
     );

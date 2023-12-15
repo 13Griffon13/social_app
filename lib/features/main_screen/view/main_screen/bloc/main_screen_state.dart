@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../../core/domain/entities/failure.dart';
+import '../../../../../core/domain/entities/failure.dart';
+
 
 part 'main_screen_state.freezed.dart';
 

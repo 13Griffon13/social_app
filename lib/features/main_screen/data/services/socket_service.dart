@@ -20,7 +20,6 @@ class SocketService {
   Future<void> openServer(int port) async {
     _server = await ServerSocket.bind('localhost', port);
     _server.listen((Socket socket) {
-      print('got connection!');
       _socket = socket;
       _initSocket();
       _connectionStreamController.sink.add(true);
@@ -28,7 +27,6 @@ class SocketService {
   }
 
   Future<Either<Failure, bool>> connect(String address, int port) async {
-    print('service connecting...');
     try {
       _socket = await Socket.connect(address, port);
       _initSocket();
