@@ -73,8 +73,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       errorText: state.emailValidationError,
                       keyboardType: TextInputType.emailAddress,
                       onChanged: (text) {
-                        _signUpBloc.add(
-                            SignUpScreenEvent.emailFieldChanged(newValue: text));
+                        _signUpBloc.add(SignUpScreenEvent.emailFieldChanged(
+                            newValue: text));
+                      },
+                    ),
+                    Text(
+                      Strings.nicknameDescription,
+                      style: TextStyle(
+                        fontSize: 16.0,
+                      ),
+                    ),
+                    TextFieldWithValidation(
+                      padding: EdgeInsets.symmetric(vertical: 20.0),
+                      hint: Strings.nickname,
+                      errorText: state.nicknameValidationError,
+                      keyboardType: TextInputType.name,
+                      onChanged: (text) {
+                        _signUpBloc.add(SignUpScreenEvent.nicknameFieldChanged(
+                            newValue: text));
                       },
                     ),
                     Text(
@@ -91,7 +107,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       obscureText: state.showPassword,
                       trailingWidget: TextButton(
                         onPressed: () {
-                          _signUpBloc.add(SignUpScreenEvent.showPasswordPressed());
+                          _signUpBloc
+                              .add(SignUpScreenEvent.showPasswordPressed());
                         },
                         child: Icon(
                           state.showPassword
@@ -101,7 +118,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       onChanged: (text) {
                         _signUpBloc.add(
-                          SignUpScreenEvent.passwordFieldChanged(newValue: text),
+                          SignUpScreenEvent.passwordFieldChanged(
+                              newValue: text),
                         );
                       },
                     ),
@@ -116,7 +134,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       obscureText: state.showPassword,
                       trailingWidget: TextButton(
                         onPressed: () {
-                          _signUpBloc.add(SignUpScreenEvent.showPasswordPressed());
+                          _signUpBloc
+                              .add(SignUpScreenEvent.showPasswordPressed());
                         },
                         child: Icon(
                           state.showPassword

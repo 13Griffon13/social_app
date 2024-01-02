@@ -1,14 +1,8 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:social_app/core/view/widgets/general_button.dart';
-import 'package:social_app/features/auth/view/auth_bloc/auth_bloc.dart';
-import 'package:social_app/features/auth/view/auth_bloc/auth_event.dart';
+import 'package:social_app/features/main_screen/view/main_screen/right_drawer.dart';
+import 'package:social_app/navigation/app_router.dart';
 
-import '../../../../locales/strings.dart';
-import 'bloc/main_screen_bloc.dart';
-import 'bloc/main_screen_state.dart';
 
 @RoutePage()
 class MainScreen extends StatelessWidget {
@@ -16,30 +10,37 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<MainScreenBloc>();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          Strings.appName,
-        ),
-        centerTitle: true,
-      ),
-      body: BlocConsumer<MainScreenBloc, MainScreenState>(
-        bloc: bloc,
-        listener: (context, state) {
-
-        },
-        builder: (context, state) {
-          return Center(
-            child: GeneralButton(
-              onPress: (){
-                context.read<AuthBloc>().add(const AuthEvent.logOut());
-              },
-              child: const Text('TMP Sign Out'),
-            ),
-          );
-        },
-      ),
+    //final bloc = context.read<MainScreenBloc>();
+    return AutoTabsRouter(
+      routes: [
+        FeedMainRoute(),
+        ProfileRoute(),
+      ],
+      builder: (context, child) {
+        final tabsRouter = AutoTabsRouter.of(context);
+        return Scaffold(
+          appBar: AppBar(
+          ),
+          drawer: RightDrawer(),
+          body: child,
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: tabsRouter.activeIndex,
+            onTap: (index) {
+              tabsRouter.setActiveIndex(index);
+            },
+            items: [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.feed),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: '',
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

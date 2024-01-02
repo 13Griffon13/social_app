@@ -13,6 +13,9 @@ class SignUpScreenEvent with _$SignUpScreenEvent {
   const factory SignUpScreenEvent.emailFieldChanged(
       {required String newValue}) = _EmailFieldChanged;
 
+  const factory SignUpScreenEvent.nicknameFieldChanged(
+      {required String newValue}) = _NicknameFieldChanged;
+
   const factory SignUpScreenEvent.passwordFieldChanged(
       {required String newValue}) = _PasswordFieldChanged;
 

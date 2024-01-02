@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/core/di_container.dart';
 import 'package:social_app/features/auth/data/repo_impl/firebase_auth_repository.dart';
 import 'package:social_app/features/auth/domain/entity/auth_status.dart';
+import 'package:social_app/features/auth/domain/repo/auth_repository.dart';
 import 'package:social_app/features/auth/domain/use_cases/sign_out.dart';
 import 'package:social_app/navigation/app_router.dart';
 
@@ -25,7 +26,7 @@ class GlobalBlocProvider extends StatelessWidget implements AutoRouteWrapper {
       providers: [
         BlocProvider(
           create: (context) => AuthBloc(
-            authRepository: getIt.get<FirebaseAuthRepository>(),
+            authRepository: getIt.get<AuthRepository>(),
             signOutUseCase: getIt.get<SignOutUseCase>(),
           ),
         ),

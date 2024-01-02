@@ -10,6 +10,8 @@ class SignUpScreenState with _$SignUpScreenState {
   const factory SignUpScreenState({
     @Default('') String email,
     String? emailValidationError,
+    @Default('') String nickname,
+    String? nicknameValidationError,
     @Default('') String password,
     String? passwordValidationError,
     @Default('') String repeatPassword,

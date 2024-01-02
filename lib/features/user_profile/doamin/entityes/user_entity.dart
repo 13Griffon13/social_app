@@ -5,11 +5,14 @@ part 'user_entity.freezed.dart';
 
 @freezed
 class UserEntity with _$UserEntity {
+
   const factory UserEntity({
     required String id,
-    required String nickName,
     required String email,
-    @Default('') String about,
+    required String name,
+    @Default('') String avatarUrl,
+    @Default('') String status,
+    @Default('') String bio,
   }) = _UserEntity;
 
 }

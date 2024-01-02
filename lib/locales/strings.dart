@@ -16,6 +16,8 @@ class Strings {
 
   static String get signUp => 'Sign Up';
 
+  static String get signOut => 'Sign Out';
+
   static String get forgotPassword => 'Forgot password?';
 
   static String get repeatPassword => 'Repeat password';
@@ -47,4 +49,35 @@ class Strings {
       '1 upper case letter, 1 lower case letter and 1 digit';
 
   static String get passwordsDoNotMatch => 'Passwords don\'t match';
+
+  static String get nickname => 'Nickname';
+
+  static String get nicknameDescription =>
+      'This is the name that will be visible to other people. '
+      'May contain only latin letters and . _ - symbols, '
+          'and me at least 3 and at most 24 characters long.';
+
+  static String get invalidNicknameFormat =>
+      'Nickname may only contain latin letters, and . _ - symbols, '
+          'and me at least 3 and at most 24 characters long';
+
+  static String get editProfile => 'Edit Profile';
+
+  static String get userMissingError => 'Wasn\'t able to retrieve current user datta';
+
+  static String get bio => 'Bio';
+
+  static String get bioHint => 'Tell something about yourself';
+
+  static String get status => 'Status';
+
+  static String get statusHint => 'Tell others what are you up to';
+
+  static String get changePicture => 'Change picture';
+
+  static String get saveChanges => 'Save Changes';
+
+  static String get deleteProfile => 'Delete Profile';
+
+  //static String get name => '';
 }
