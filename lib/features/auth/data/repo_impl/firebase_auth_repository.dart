@@ -1,19 +1,25 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:social_app/core/constants/firestore_collections.dart';
 import 'package:social_app/core/domain/entities/failure.dart';
 import 'package:social_app/features/auth/domain/entity/auth_status.dart';
+import 'package:social_app/features/auth/domain/entity/registration_entity.dart';
 import 'package:social_app/features/auth/domain/entity/user_credentials.dart';
 import 'package:social_app/features/auth/domain/repo/auth_repository.dart';
+import 'package:social_app/features/user_profile/data/model/user_data_model.dart';
 
 class FirebaseAuthRepository extends AuthRepository {
   final FirebaseAuth firebaseAuth;
+  final FirebaseFirestore firestore;
   final StreamController<AuthStatus> _statusController = StreamController();
   late final StreamSubscription _authStateSubscription;
 
   FirebaseAuthRepository({
     required this.firebaseAuth,
+    required this.firestore,
   }) {
     _authStateSubscription = firebaseAuth.authStateChanges().listen((event) {
       if (event != null) {
@@ -52,12 +58,18 @@ class FirebaseAuthRepository extends AuthRepository {
   Stream<AuthStatus> get statusStream => _statusController.stream;
 
   @override
-  Future<Either<Failure, bool>> signUp(UserCredentials credentials) async {
+  Future<Either<Failure, bool>> signUp(
+      RegistrationEntity registrationData) async {
     try {
       final result = await firebaseAuth.createUserWithEmailAndPassword(
-        email: credentials.email,
-        password: credentials.password,
+        email: registrationData.email,
+        password: registrationData.password,
+
       );
+      firestore
+          .collection(FirestoreCollections.userDataCollection)
+          .doc(firebaseAuth.currentUser!.uid)
+          .set(UserDataModel(nickname: registrationData.nickname).toJson());
       return right(result.user != null);
     } catch (e) {
       return left(Failure(
@@ -97,5 +109,10 @@ class FirebaseAuthRepository extends AuthRepository {
         name: e.toString(),
       ));
     }
+  }
+
+  @override
+  void close() {
+    _authStateSubscription.cancel();
   }
 }
