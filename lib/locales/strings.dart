@@ -55,15 +55,16 @@ class Strings {
   static String get nicknameDescription =>
       'This is the name that will be visible to other people. '
       'May contain only latin letters and . _ - symbols, '
-          'and me at least 3 and at most 24 characters long.';
+      'and me at least 3 and at most 24 characters long.';
 
   static String get invalidNicknameFormat =>
       'Nickname may only contain latin letters, and . _ - symbols, '
-          'and me at least 3 and at most 24 characters long';
+      'and me at least 3 and at most 24 characters long';
 
   static String get editProfile => 'Edit Profile';
 
-  static String get userMissingError => 'Wasn\'t able to retrieve current user datta';
+  static String get userMissingError =>
+      'Wasn\'t able to retrieve current user datta';
 
   static String get bio => 'Bio';
 
@@ -79,5 +80,11 @@ class Strings {
 
   static String get deleteProfile => 'Delete Profile';
 
-  //static String get name => '';
+  static String get cancel => 'Cancel';
+
+  static String get takePhoto => 'Take Photo';
+
+  static String get gallery => 'Gallery';
+
+//static String get name => '';
 }

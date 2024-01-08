@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/core/view/widgets/general_button.dart';
+import 'package:social_app/core/view/widgets/user_avatar.dart';
+import 'package:social_app/features/picture_picker/view/picker_selection_dialog.dart';
 import 'package:social_app/features/user_profile/view/profile_setup_screen/bloc/profile_setup_screen_bloc.dart';
 import 'package:social_app/features/user_profile/view/profile_setup_screen/bloc/profile_setup_screen_event.dart';
 import 'package:social_app/features/user_profile/view/profile_setup_screen/bloc/profile_setup_screen_state.dart';
 import 'package:social_app/locales/strings.dart';
+import 'package:social_app/navigation/app_router.dart';
 
 @RoutePage()
 class ProfileSetupScreen extends StatefulWidget {
@@ -17,7 +22,6 @@ class ProfileSetupScreen extends StatefulWidget {
 }
 
 class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
-
   late final ProfileSetupBloc profileSetupBloc;
 
   final TextEditingController _statusController = TextEditingController();
@@ -27,6 +31,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     profileSetupBloc = context.read<ProfileSetupBloc>();
+    _bioController.text = profileSetupBloc.state.currentInfo.bio;
+    _statusController.text = profileSetupBloc.state.currentInfo.status;
   }
 
   @override
@@ -35,17 +41,16 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       appBar: AppBar(),
       body: BlocConsumer<ProfileSetupBloc, ProfileSetupScreenState>(
         bloc: profileSetupBloc,
-        listener: (context, state){
-          if(state.updateCompleted){
-            context.popRoute();
+        listenWhen: (prev, cur) {
+          return cur.updateCompleted;
+        },
+        listener: (context, state) {
+          if (state.updateCompleted) {
+            context.navigateTo(ProfileRoute());
           }
         },
-        buildWhen: (prev, cur){
-          return cur.currentInfo != prev.currentInfo;
-        },
         builder: (context, state) {
-          _statusController.text = state.newStatus;
-          _bioController.text = state.newBio;
+          print(state.saveChangesButtonState.toString());
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(
@@ -55,11 +60,31 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CircleAvatar(
-                    radius: 50.0,
-                  ),
+                  state.newPhoto == null
+                      ? UserAvatar(
+                          userNickname: state.currentInfo.name,
+                          avatarUrl: state.currentInfo.avatarUrl,
+                          radius: 80.0,
+                        )
+                      : CircleAvatar(
+                          radius: 80.0,
+                          backgroundImage: FileImage(File(state.newPhoto!)),
+                        ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return PickerSelector(
+                            onPhotoSelected: (imagePath) {
+                              profileSetupBloc.add(
+                                ProfileSetupScreenEvent.photoChanged(imagePath),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
                     child: Text(Strings.changePicture),
                   ),
                   TextField(
@@ -99,6 +124,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                     ),
                   ),
                   GeneralButton(
+                    buttonState: state.saveChangesButtonState,
                     child: Text(Strings.saveChanges),
                     onPress: () {
                       profileSetupBloc
@@ -119,5 +145,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    profileSetupBloc.add(ProfileSetupScreenEvent.defaultState());
+    super.dispose();
   }
 }

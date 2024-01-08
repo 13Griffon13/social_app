@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:social_app/features/auth/data/repo_impl/firebase_auth_repository.dart';
 import 'package:social_app/features/auth/domain/repo/auth_repository.dart';
@@ -15,31 +16,32 @@ final getIt = GetIt.instance;
 
 void diInit() {
   ///Services
-  getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance,);
+  getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
   getIt.registerLazySingleton<FirebaseFirestore>(
-      () => FirebaseFirestore.instance);
+    () => FirebaseFirestore.instance,
+  );
+  getIt.registerLazySingleton<FirebaseStorage>(() => FirebaseStorage.instance);
 
   ///*****
   ///Repos
   ///*****
 
   getIt.registerLazySingleton<AuthRepository>(
-    () => FirebaseAuthRepository(
-      firebaseAuth: getIt.get<FirebaseAuth>(),
-      firestore: getIt.get<FirebaseFirestore>(),
-    ),
-    dispose: (authRepo){
-      authRepo.close();
-    }
-  );
+      () => FirebaseAuthRepository(
+            firebaseAuth: getIt.get<FirebaseAuth>(),
+            firestore: getIt.get<FirebaseFirestore>(),
+          ), dispose: (authRepo) {
+    authRepo.close();
+  });
   getIt.registerLazySingleton<UserRepository>(
     () => FirebaseUserRepository(
       firebaseAuth: getIt.get<FirebaseAuth>(),
       fireStore: getIt.get<FirebaseFirestore>(),
+      firebaseStorage: getIt.get<FirebaseStorage>(),
     ),
-    dispose: (userRepo){
+    dispose: (userRepo) {
       userRepo.close();
-    }
+    },
   );
 
   ///********

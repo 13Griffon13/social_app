@@ -43,6 +43,9 @@ dependencies:
   firebase_auth: ^4.15.2
   flutter_widget_from_html: ^0.14.9
   cloud_firestore: ^4.13.6
+  image_picker: ^1.0.6
+  firebase_storage: ^11.6.0
+  crop: ^0.5.5
 
 
 dev_dependencies:

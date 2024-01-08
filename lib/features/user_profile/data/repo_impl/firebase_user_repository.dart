@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:social_app/core/constants/firestore_collections.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:social_app/core/constants/firebase_paths.dart';
 import 'package:social_app/core/domain/entities/failure.dart';
 import 'package:social_app/features/user_profile/data/model/user_data_model.dart';
 import 'package:social_app/features/user_profile/doamin/entityes/user_entity.dart';
@@ -12,6 +14,7 @@ import 'package:social_app/features/user_profile/doamin/repo/user_repository.dar
 class FirebaseUserRepository extends UserRepository {
   final FirebaseAuth firebaseAuth;
   final FirebaseFirestore fireStore;
+  final FirebaseStorage firebaseStorage;
 
   late StreamSubscription _authStateSubscription;
   StreamSubscription? _userUpdateSubscription;
@@ -19,11 +22,12 @@ class FirebaseUserRepository extends UserRepository {
   FirebaseUserRepository({
     required this.firebaseAuth,
     required this.fireStore,
+    required this.firebaseStorage,
   }) {
     _authStateSubscription = firebaseAuth.authStateChanges().listen((user) {
       if (user != null) {
         _userUpdateSubscription = fireStore
-            .collection(FirestoreCollections.userDataCollection)
+            .collection(FirebasePaths.userDataCollection)
             .doc(firebaseAuth.currentUser!.uid)
             .snapshots()
             .listen(
@@ -61,12 +65,24 @@ class FirebaseUserRepository extends UserRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> updateUserData(UserEntity userEntity) async {
+  Future<Either<Failure, bool>> updateUserData(
+    String? avatarPath,
+    String? newStatus,
+    String? newBio,
+  ) async {
     try {
+      final currentUser = await userSubject.first;
+      final newAvatarUrl = await saveNewAvatar(avatarPath, currentUser!.id);
       await fireStore
-          .collection(FirestoreCollections.userDataCollection)
-          .doc(userEntity.id)
-          .set(UserDataModel.fromEntity(userEntity).toJson());
+          .collection(FirebasePaths.userDataCollection)
+          .doc(currentUser.id)
+          .set(UserDataModel.fromEntity(
+            currentUser.copyWith(
+              avatarUrl: newAvatarUrl ?? currentUser.avatarUrl,
+              status: newStatus ?? currentUser.status,
+              bio: newBio ?? currentUser.bio,
+            ),
+          ).toJson());
       return right(true);
     } catch (e) {
       return left(
@@ -76,9 +92,22 @@ class FirebaseUserRepository extends UserRepository {
     throw UnimplementedError();
   }
 
+  Future<String?> saveNewAvatar(String? filePath, String uid) async {
+    if (filePath != null) {
+      final fileExtension = filePath.split('.').last;
+      final storageRef = firebaseStorage.ref();
+      final avatarRef = storageRef.child('${FirebasePaths.userAvatarFolder(uid)}/avatar.$fileExtension}');
+      await avatarRef.putFile(File(filePath));
+      return await avatarRef.getDownloadURL();
+    } else {
+      return null;
+    }
+  }
+
   @override
   void close() {
     _authStateSubscription.cancel();
     _userUpdateSubscription?.cancel();
+    super.close();
   }
 }

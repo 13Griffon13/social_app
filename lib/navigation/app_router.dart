@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
 import 'package:social_app/features/main_screen/view/main_screen/main_screen.dart';
 import 'package:social_app/core/view/global_bloc_provider.dart';
 import 'package:social_app/features/auth/view/splash_screen/splash_screen.dart';
@@ -12,6 +13,7 @@ import 'package:social_app/features/user_profile/view/nickname_screen/nickname_s
 import 'package:social_app/features/user_profile/view/profile_setup_screen/profile_setup_screen.dart';
 import 'package:social_app/features/user_profile/view/profile_screen/profile_screen.dart';
 import 'package:social_app/features/feed/view/feed_main/feeds_main_tab.dart';
+import 'package:social_app/features/picture_picker/view/croper_screen/cropper_screen.dart';
 
 part 'app_router.gr.dart';
 
@@ -50,6 +52,7 @@ class AppRouter extends _$AppRouter {
                 AutoRoute(page: ProfileSetupRoute.page),
               ],
             ),
+            AutoRoute(page: CropperRoute.page),
           ],
         ),
       ];

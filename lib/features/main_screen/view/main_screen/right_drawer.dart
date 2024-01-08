@@ -22,6 +22,7 @@ class RightDrawer extends StatelessWidget {
             ),
             title: Text(Strings.editProfile),
             onTap: () {
+              context.popRoute();
               context.pushRoute(ProfileSetupRoute());
             },
           ),
