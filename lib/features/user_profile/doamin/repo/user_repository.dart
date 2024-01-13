@@ -1,17 +1,37 @@
+import 'dart:async';
+
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:social_app/core/domain/entities/failure.dart';
 import 'package:social_app/features/user_profile/doamin/entityes/user_entity.dart';
 
-abstract class UserRepository{
-
-  ///TODO something fishy here
-
+abstract class UserRepository {
+  ///Subject probably still need so repo can sent some signals on user update
   BehaviorSubject<UserEntity?> userSubject = BehaviorSubject();
+  late StreamSubscription<UserEntity?> _userSubscription;
+  UserEntity? _userInfo;
 
-  Future<UserEntity?> get userData => userSubject.first;
+  UserRepository() {
+    _userSubscription = userSubject.listen((value) {
+      _userInfo = value;
+    });
+  }
 
-  Future<Either<Failure, bool>> updateUserData(UserEntity userEntity);
+  UserEntity? get userData => _userInfo;
 
-  void close();
+  Future<Either<Failure, bool>> updateUserData(
+    String? newStatus,
+    String? newBio,
+  );
+
+  Future<Either<Failure, bool>> deletePhoto();
+
+  Future<Either<Failure, bool>> updatePhoto(String filePath);
+
+  Future<Either<Failure, bool>> deleteUser();
+
+  void close() {
+    _userSubscription.cancel();
+    userSubject.close();
+  }
 }

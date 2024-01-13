@@ -13,11 +13,20 @@ class ProfileSetupScreenEvent with _$ProfileSetupScreenEvent {
 
   const factory ProfileSetupScreenEvent.bioChanged(String newBio) = _BioChanged;
 
-  const factory ProfileSetupScreenEvent.photoChanged() = _PhotoChanged;
+  const factory ProfileSetupScreenEvent.photoChanged(String imagePath) =
+      _PhotoChanged;
+
+  const factory ProfileSetupScreenEvent.deletePhotoPressed() =
+      _DeletePhotoPressed;
+
+  const factory ProfileSetupScreenEvent.deleteAccountPressed() =
+  _DeleteAccountPressed;
 
   const factory ProfileSetupScreenEvent.updateCurrentInfo(
-      UserEntity? userEntity) = _UpdateurrentInfo;
+      UserEntity userEntity) = _UpdateurrentInfo;
 
   const factory ProfileSetupScreenEvent.saveChangesPressed() =
       _SaveChangesPressed;
+
+  const factory ProfileSetupScreenEvent.defaultState() = _DefaultState;
 }

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:social_app/core/constants/firestore_collections.dart';
+import 'package:social_app/core/constants/firebase_paths.dart';
 import 'package:social_app/core/domain/entities/failure.dart';
 import 'package:social_app/features/auth/domain/entity/auth_status.dart';
 import 'package:social_app/features/auth/domain/entity/registration_entity.dart';
@@ -67,7 +67,7 @@ class FirebaseAuthRepository extends AuthRepository {
 
       );
       firestore
-          .collection(FirestoreCollections.userDataCollection)
+          .collection(FirebasePaths.userDataCollection)
           .doc(firebaseAuth.currentUser!.uid)
           .set(UserDataModel(nickname: registrationData.nickname).toJson());
       return right(result.user != null);

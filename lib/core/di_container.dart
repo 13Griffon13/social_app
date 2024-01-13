@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:social_app/features/auth/data/repo_impl/firebase_auth_repository.dart';
 import 'package:social_app/features/auth/domain/repo/auth_repository.dart';
@@ -9,37 +10,41 @@ import 'package:social_app/features/auth/domain/use_cases/sign_out.dart';
 import 'package:social_app/features/auth/domain/use_cases/sign_up.dart';
 import 'package:social_app/features/user_profile/data/repo_impl/firebase_user_repository.dart';
 import 'package:social_app/features/user_profile/doamin/repo/user_repository.dart';
+import 'package:social_app/features/user_profile/doamin/use_cases/delete_photo.dart';
+import 'package:social_app/features/user_profile/doamin/use_cases/delete_user.dart';
+import 'package:social_app/features/user_profile/doamin/use_cases/update_photo.dart';
 import 'package:social_app/features/user_profile/doamin/use_cases/update_profile_info.dart';
 
 final getIt = GetIt.instance;
 
 void diInit() {
   ///Services
-  getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance,);
+  getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
   getIt.registerLazySingleton<FirebaseFirestore>(
-      () => FirebaseFirestore.instance);
+    () => FirebaseFirestore.instance,
+  );
+  getIt.registerLazySingleton<FirebaseStorage>(() => FirebaseStorage.instance);
 
   ///*****
   ///Repos
   ///*****
 
   getIt.registerLazySingleton<AuthRepository>(
-    () => FirebaseAuthRepository(
-      firebaseAuth: getIt.get<FirebaseAuth>(),
-      firestore: getIt.get<FirebaseFirestore>(),
-    ),
-    dispose: (authRepo){
-      authRepo.close();
-    }
-  );
+      () => FirebaseAuthRepository(
+            firebaseAuth: getIt.get<FirebaseAuth>(),
+            firestore: getIt.get<FirebaseFirestore>(),
+          ), dispose: (authRepo) {
+    authRepo.close();
+  });
   getIt.registerLazySingleton<UserRepository>(
     () => FirebaseUserRepository(
       firebaseAuth: getIt.get<FirebaseAuth>(),
       fireStore: getIt.get<FirebaseFirestore>(),
+      firebaseStorage: getIt.get<FirebaseStorage>(),
     ),
-    dispose: (userRepo){
+    dispose: (userRepo) {
       userRepo.close();
-    }
+    },
   );
 
   ///********
@@ -71,6 +76,21 @@ void diInit() {
   ///User_profile
   getIt.registerLazySingleton<UpdateProfileInfoUseCase>(
     () => UpdateProfileInfoUseCase(
+      userRepository: getIt.get<UserRepository>(),
+    ),
+  );
+  getIt.registerLazySingleton<UpdatePhotoUseCase>(
+        () => UpdatePhotoUseCase(
+      userRepository: getIt.get<UserRepository>(),
+    ),
+  );
+  getIt.registerLazySingleton<DeletePhotoUseCase>(
+        () => DeletePhotoUseCase(
+      userRepository: getIt.get<UserRepository>(),
+    ),
+  );
+  getIt.registerLazySingleton<DeleteUserUseCase>(
+        () => DeleteUserUseCase(
       userRepository: getIt.get<UserRepository>(),
     ),
   );
