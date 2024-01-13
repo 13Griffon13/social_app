@@ -60,25 +60,23 @@ class FirebaseUserRepository extends UserRepository {
       userSubject.add(userEntity);
       return right(userEntity);
     } catch (e) {
-      return left(Failure(name: e.toString()));
+      return left(Failure.fromException(e));
     }
   }
 
   @override
   Future<Either<Failure, bool>> updateUserData(
-    String? avatarPath,
     String? newStatus,
     String? newBio,
   ) async {
     try {
-      final currentUser = await userSubject.first;
-      final newAvatarUrl = await saveNewAvatar(avatarPath, currentUser!.id);
+      final currentUser = userData!;
+
       await fireStore
           .collection(FirebasePaths.userDataCollection)
           .doc(currentUser.id)
-          .set(UserDataModel.fromEntity(
+          .update(UserDataModel.fromEntity(
             currentUser.copyWith(
-              avatarUrl: newAvatarUrl ?? currentUser.avatarUrl,
               status: newStatus ?? currentUser.status,
               bio: newBio ?? currentUser.bio,
             ),
@@ -86,17 +84,104 @@ class FirebaseUserRepository extends UserRepository {
       return right(true);
     } catch (e) {
       return left(
-        Failure(name: e.runtimeType.toString(), description: e.toString()),
+        Failure.fromException(e),
       );
     }
-    throw UnimplementedError();
   }
 
-  Future<String?> saveNewAvatar(String? filePath, String uid) async {
-    if (filePath != null) {
-      final fileExtension = filePath.split('.').last;
+  @override
+  Future<Either<Failure, bool>> deletePhoto() async {
+    try {
+      final currentUser = userData!;
       final storageRef = firebaseStorage.ref();
-      final avatarRef = storageRef.child('${FirebasePaths.userAvatarFolder(uid)}/avatar.$fileExtension}');
+      print(
+          'deleting : ${FirebasePaths.userAvatarFolder(currentUser.id)}/avatar.png');
+      await storageRef
+          .child('${FirebasePaths.userAvatarFolder(currentUser.id)}/avatar.png')
+          .delete();
+      await fireStore
+          .collection(FirebasePaths.userDataCollection)
+          .doc(currentUser.id)
+          .update({'profilePicUrl': ''});
+      return right(true);
+    } catch (e) {
+      return left(Failure.fromException(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> updatePhoto(String filePath) async {
+    try {
+      final currentUser = userData!;
+      final newAvatarUrl = await _saveNewAvatar(filePath);
+      await fireStore
+          .collection(FirebasePaths.userDataCollection)
+          .doc(currentUser.id)
+          .update({'profilePicUrl': newAvatarUrl});
+      return right(true);
+    } catch (e) {
+      return left(Failure.fromException(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> deleteUser() async {
+    try {
+      final currentUser = userData!;
+      final usersStoredData = await firebaseStorage
+          .ref()
+          .child('users/${currentUser.id}')
+          .listAll();
+      for (var element in usersStoredData.items) {
+        firebaseStorage.ref(element.fullPath).delete();
+      }
+      await fireStore
+          .collection(FirebasePaths.userDataCollection)
+          .doc(currentUser.id)
+          .delete();
+      await firebaseAuth.currentUser!.delete();
+      return right(true);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "requires-recent-login") {
+        final result = await _reauthenticateAndDelete();
+        if (result == null) {
+          return right(true);
+        } else {
+          return left(result);
+        }
+      } else {
+        return left(Failure.fromException(e));
+      }
+    } catch (e) {
+      return left(
+        Failure.fromException(e),
+      );
+    }
+  }
+
+  Future<Failure?> _reauthenticateAndDelete() async {
+    try {
+      final providerData = firebaseAuth.currentUser?.providerData.first;
+      ///TODO finish implemetnation
+      print(providerData!.providerId.toString());
+      if (AppleAuthProvider().providerId == providerData!.providerId) {
+        await firebaseAuth.currentUser!
+            .reauthenticateWithProvider(AppleAuthProvider());
+      } else if (GoogleAuthProvider().providerId == providerData.providerId) {
+        await firebaseAuth.currentUser!
+            .reauthenticateWithProvider(GoogleAuthProvider());
+      }
+      await firebaseAuth.currentUser?.delete();
+    } catch (e) {
+      return Failure.fromException(e);
+    }
+  }
+
+  Future<String?> _saveNewAvatar(String? filePath) async {
+    if (filePath != null) {
+      final storageRef = firebaseStorage.ref();
+      final avatarRef = storageRef
+          .child('${FirebasePaths.userAvatarFolder(userData!.id)}/avatar.png');
       await avatarRef.putFile(File(filePath));
       return await avatarRef.getDownloadURL();
     } else {

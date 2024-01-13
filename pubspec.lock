@@ -241,14 +241,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
-  collision:
-    dependency: transitive
-    description:
-      name: collision
-      sha256: "2bd2eb6a9dfc69bc9d92cb3401dcfadb3b8429a261102ec0e59a91c0f5fcab25"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.3"
   convert:
     dependency: transitive
     description:
@@ -257,14 +249,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
-  crop:
+  cropperx:
     dependency: "direct main"
     description:
-      name: crop
-      sha256: "9d94ec70fb2a5b1f4c30a686db561ed2395a900e5b17f44a0111f2c70ecf6889"
+      name: cropperx
+      sha256: "62c73b4d18e4920fe914b27b45fabb0d5ea62099f35b62e94c81d0ffee35e702"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.5"
+    version: "1.1.1"
   cross_file:
     dependency: transitive
     description:
@@ -1005,22 +997,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
-  socket_io_client:
-    dependency: "direct main"
-    description:
-      name: socket_io_client
-      sha256: ede469f3e4c55e8528b4e023bdedbc20832e8811ab9b61679d1ba3ed5f01f23b
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.3+1"
-  socket_io_common:
-    dependency: transitive
-    description:
-      name: socket_io_common
-      sha256: "2ab92f8ff3ebbd4b353bf4a98bee45cc157e3255464b2f90f66e09c4472047eb"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.3"
   source_gen:
     dependency: transitive
     description:

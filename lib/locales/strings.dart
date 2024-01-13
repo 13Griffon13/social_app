@@ -86,5 +86,18 @@ class Strings {
 
   static String get gallery => 'Gallery';
 
+  static String get deletePhoto => 'Delete Photo';
+
+  static String get accept => 'Accept';
+
+  static String get confirm => 'Confirm';
+
+  static String get warning => 'Warning!';
+
+  static String get deleteAccountExplanation => 'This action wil PERMANENTLY '
+      'delete your account and all data bound to if. After confirming this '
+      'action all your profile data will be lost without ability to restore it.'
+      'Are you sure you want to proceed?';
+
 //static String get name => '';
 }

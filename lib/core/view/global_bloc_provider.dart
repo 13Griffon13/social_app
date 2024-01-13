@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/core/di_container.dart';
-import 'package:social_app/features/auth/data/repo_impl/firebase_auth_repository.dart';
 import 'package:social_app/features/auth/domain/entity/auth_status.dart';
 import 'package:social_app/features/auth/domain/repo/auth_repository.dart';
 import 'package:social_app/features/auth/domain/use_cases/sign_out.dart';

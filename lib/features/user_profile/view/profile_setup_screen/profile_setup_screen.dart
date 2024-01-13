@@ -1,15 +1,16 @@
 import 'dart:io';
 
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/core/view/widgets/general_button.dart';
 import 'package:social_app/core/view/widgets/user_avatar.dart';
 import 'package:social_app/features/picture_picker/view/picker_selection_dialog.dart';
+import 'package:social_app/features/user_profile/doamin/entityes/photo_url.dart';
 import 'package:social_app/features/user_profile/view/profile_setup_screen/bloc/profile_setup_screen_bloc.dart';
 import 'package:social_app/features/user_profile/view/profile_setup_screen/bloc/profile_setup_screen_event.dart';
 import 'package:social_app/features/user_profile/view/profile_setup_screen/bloc/profile_setup_screen_state.dart';
+import 'package:social_app/features/user_profile/view/profile_setup_screen/delete_confirmation_popup.dart';
 import 'package:social_app/locales/strings.dart';
 import 'package:social_app/navigation/app_router.dart';
 
@@ -50,7 +51,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           }
         },
         builder: (context, state) {
-          print(state.saveChangesButtonState.toString());
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(
@@ -60,16 +60,22 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  state.newPhoto == null
-                      ? UserAvatar(
-                          userNickname: state.currentInfo.name,
-                          avatarUrl: state.currentInfo.avatarUrl,
-                          radius: 80.0,
-                        )
-                      : CircleAvatar(
-                          radius: 80.0,
-                          backgroundImage: FileImage(File(state.newPhoto!)),
-                        ),
+                  switch (state.newPhoto.source) {
+                    PhotoSource.network => UserAvatar(
+                        userNickname: state.currentInfo.name,
+                        avatarUrl: state.currentInfo.avatarUrl,
+                        radius: 70.0,
+                      ),
+                    PhotoSource.file => CircleAvatar(
+                        radius: 80.0,
+                        backgroundImage: FileImage(File(state.newPhoto.link!)),
+                      ),
+                    _ => UserAvatar(
+                        userNickname: state.currentInfo.name,
+                        avatarUrl: '',
+                        radius: 70.0,
+                      ),
+                  },
                   TextButton(
                     onPressed: () {
                       showModalBottomSheet(
@@ -86,6 +92,21 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       );
                     },
                     child: Text(Strings.changePicture),
+                  ),
+                  Offstage(
+                    offstage: state.newPhoto.source == PhotoSource.none ||
+                        state.newPhoto.source == PhotoSource.deleted,
+                    child: TextButton(
+                      onPressed: () {
+                        profileSetupBloc.add(
+                          ProfileSetupScreenEvent.deletePhotoPressed(),
+                        );
+                      },
+                      child: Text(Strings.deletePhoto),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.red,
+                      ),
+                    ),
                   ),
                   TextField(
                     onChanged: (newText) {
@@ -132,7 +153,17 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                     },
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => DeleteConfirmationPopUp(
+                          onAccept: () {
+                            profileSetupBloc.add(
+                                ProfileSetupScreenEvent.deleteAccountPressed());
+                          },
+                        ),
+                      );
+                    },
                     child: Text(Strings.deleteProfile),
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.red,

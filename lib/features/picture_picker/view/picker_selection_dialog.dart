@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,8 +21,9 @@ class PickerSelector extends StatelessWidget {
           onPressed: () async {
             final image = await _picker.pickImage(source: ImageSource.camera);
             if (image != null) {
-              final cropResult = await context.pushRoute<String?>(CropperRoute(imagePath: image.path));
-              if(cropResult != null){
+              final cropResult = await context
+                  .pushRoute<String?>(CropperRoute(imagePath: image.path));
+              if (cropResult != null) {
                 onPhotoSelected(cropResult);
               }
               context.popRoute();
@@ -36,10 +35,10 @@ class PickerSelector extends StatelessWidget {
           onPressed: () async {
             final image = await _picker.pickImage(source: ImageSource.gallery);
             if (image != null) {
-              final cropResult = await context.pushRoute<String?>(CropperRoute(imagePath: image.path));
-              if(cropResult != null){
+              final cropResult = await context
+                  .pushRoute<String?>(CropperRoute(imagePath: image.path));
+              if (cropResult != null) {
                 onPhotoSelected(cropResult);
-
               }
               context.popRoute();
             }

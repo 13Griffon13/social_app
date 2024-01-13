@@ -1,28 +1,25 @@
 import 'package:dartz/dartz.dart';
 import 'package:social_app/core/domain/entities/failure.dart';
 import 'package:social_app/core/domain/usecase/usecase.dart';
-import 'package:social_app/features/user_profile/doamin/entityes/user_entity.dart';
 import 'package:social_app/features/user_profile/doamin/repo/user_repository.dart';
 
-class UpdateProfileInfoUseCase extends UseCase<bool, Params> {
+class UpdateProfileInfoUseCase extends UseCase<bool, UpdateProfileParams> {
   final UserRepository userRepository;
 
   UpdateProfileInfoUseCase({required this.userRepository});
 
   @override
-  Future<Either<Failure, bool>> call(Params params) {
+  Future<Either<Failure, bool>> call(UpdateProfileParams params) {
     return userRepository.updateUserData(
-      params.newAvatarPath,
       params.newStatus,
       params.newBio,
     );
   }
 }
 
-class Params {
-  final String? newAvatarPath;
+class UpdateProfileParams {
   final String? newStatus;
   final String? newBio;
 
-  Params({this.newAvatarPath, this.newStatus, this.newBio});
+  UpdateProfileParams({this.newStatus, this.newBio});
 }

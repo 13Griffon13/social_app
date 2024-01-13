@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:crop/crop.dart';
 import 'package:flutter/material.dart';
 import 'package:social_app/core/view/widgets/general_button.dart';
+import 'package:social_app/locales/strings.dart';
+import 'package:cropperx/cropperx.dart';
 
 @RoutePage<String>()
 class CropperScreen extends StatefulWidget {
@@ -20,7 +20,7 @@ class CropperScreen extends StatefulWidget {
 }
 
 class _CropperScreenState extends State<CropperScreen> {
-  final CropController controller =CropController(aspectRatio: 1);
+  final GlobalKey _cropperKey = GlobalKey();
   late final File imageFile;
   late final String outputPath;
 
@@ -28,7 +28,11 @@ class _CropperScreenState extends State<CropperScreen> {
   void initState() {
     super.initState();
     imageFile = File(widget.imagePath);
-    outputPath = widget.imagePath.replaceAll('.jpg', '.png');
+    final fileName = widget.imagePath.split('/').last;
+    final outputName = '_$fileName'.replaceAll('.jpg', '.png');
+    outputPath = widget.imagePath.replaceAll(fileName, outputName);
+    print(widget.imagePath);
+    print(outputPath);
   }
 
   @override
@@ -37,28 +41,33 @@ class _CropperScreenState extends State<CropperScreen> {
       appBar: AppBar(),
       body: Stack(
         children: [
-          Crop(
-            child: Image(
+          Cropper(
+            cropperKey: _cropperKey,
+            image: Image(
               image: FileImage(imageFile),
             ),
-            controller: controller,
-            shape: BoxShape.circle,
-            backgroundColor: Theme.of(context).colorScheme.background,
+
+            overlayType: OverlayType.circle,
           ),
+
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
               padding: EdgeInsets.all(24.0),
               child: GeneralButton(
-                onPress: () async{
-                  final cropped = await controller.crop();
-                  final data =  await cropped!.toByteData(format: ImageByteFormat.png);
-                  final buffer = data!.buffer.asUint8List();
-                  File(outputPath).writeAsBytesSync(buffer,mode: FileMode.writeOnly);
+                onPress: () async {
+                  final croppedData =
+                      await Cropper.crop(cropperKey: _cropperKey);
+                  if (croppedData != null) {
+                    File(outputPath).writeAsBytesSync(
+                      croppedData,
+                      mode: FileMode.writeOnly,
+                    );
+                  }
                   context.popRoute(outputPath);
                 },
                 child: Text(
-                  'Accept'
+                  Strings.accept,
                 ),
               ),
             ),
@@ -67,5 +76,4 @@ class _CropperScreenState extends State<CropperScreen> {
       ),
     );
   }
-
 }

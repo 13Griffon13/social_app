@@ -20,10 +20,15 @@ abstract class UserRepository {
   UserEntity? get userData => _userInfo;
 
   Future<Either<Failure, bool>> updateUserData(
-    String? avatarPath,
     String? newStatus,
     String? newBio,
   );
+
+  Future<Either<Failure, bool>> deletePhoto();
+
+  Future<Either<Failure, bool>> updatePhoto(String filePath);
+
+  Future<Either<Failure, bool>> deleteUser();
 
   void close() {
     _userSubscription.cancel();
